@@ -1,5 +1,5 @@
 # Unity-FFmpeg-ScreenRecorder
-FFmpeg Capture screen and audio (virtual audio and microphone)  
+FFmpeg Capture screen and audio (speaker and microphone)  
 Right click on ```FFScreenRecorder``` component and click StartRecording, it will capture screen and mic both.  
 Click StopRecording it will stop recording and export video to ```streamingassets/out```.  
   
