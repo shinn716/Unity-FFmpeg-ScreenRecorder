@@ -22,13 +22,13 @@ public class FFScreenRecorder : MonoBehaviour
     #endregion
 
     public Vector2Int CaptureSize = new Vector2Int(1920, 1080);
-    public string AudioInput = "Microphone (Realtek(R) Audio)";
+    public Vector2Int OffsetPos = new Vector2Int(0, 0);
 
-    public bool debugOpenFF = false;
+    public string AudioInput = "Microphone (Realtek(R) Audio)";
     public bool showlog = true;
 
-    private string _ffpath = string.Empty;
-    private string _ffargs = string.Empty;
+    private string ffpath = string.Empty;
+    //private string _ffargs = string.Empty;
 
     private int _pid;
     private bool _isRecording = false;
@@ -36,7 +36,7 @@ public class FFScreenRecorder : MonoBehaviour
 
     private void Start()
     {
-        _ffpath = Application.streamingAssetsPath + "/ffmpeg/ffmpeg.exe";
+        ffpath = Application.streamingAssetsPath + "/ffmpeg/ffmpeg.exe";
     }
 
     private void OnDestroy()
@@ -69,9 +69,17 @@ public class FFScreenRecorder : MonoBehaviour
         Process[] goDie = Process.GetProcessesByName("ffmpeg");
         foreach (Process p in goDie) p.Kill();
 
-        _ffargs = "-list_devices true -f dshow -i dummy";
-        StartCoroutine(IERecording());
+        var _ffargs = "-list_devices true -f dshow -i dummy";
+        StartCoroutine(GetDevicesProcess(_ffargs));
     }
+
+    private IEnumerator GetDevicesProcess(string args)
+    {
+        yield return IEEnterCmd(args);
+        StartCoroutine(IEExitCmd(
+            () => { print("[Stop cmd]"); }, 1));
+    }
+
 
     [ContextMenu("StartRecording")]
     public void StartRecording()
@@ -88,22 +96,16 @@ public class FFScreenRecorder : MonoBehaviour
         foreach (Process p in goDie) p.Kill();
 
         // 解析設置，如果設置正確，則開始錄製
-        bool validSettings = ParseSettings();
-        if (validSettings)
-        {
-            UnityEngine.Debug.Log("FFRecorder::StartRecording - 執行命令：" + _ffpath + " " + _ffargs);
-            StartCoroutine(IERecording());
-        }
-        else
-        {
-            UnityEngine.Debug.LogError("FFRecorder::StartRecording - 設置不當，錄製取消，請檢查控制檯輸出。");
-        }
+        var _ffargs = SettingRecordingArgs();
+        UnityEngine.Debug.Log("FFRecorder::StartRecording - 執行命令：" + ffpath + " " + _ffargs);
+        StartCoroutine(IEEnterCmd(_ffargs));
     }
 
     [ContextMenu("StopRecording")]
     public void StopRecording()
     {
-        StopRecording(() => {
+        StopRecording(() =>
+        {
             print("[Stop FF]");
         });
     }
@@ -113,23 +115,23 @@ public class FFScreenRecorder : MonoBehaviour
     {
         if (!_isRecording)
         {
-            UnityEngine.Debug.LogError("FFRecorder::StopRecording - 當前沒有錄製進程，已取消操作。");
+            UnityEngine.Debug.Log("FFRecorder::StopRecording - 當前沒有錄製進程，已取消操作。");
             return;
         }
-
         StartCoroutine(IEExitCmd(_OnStopRecording));
     }
 
-    private bool ParseSettings()
+    private string SettingRecordingArgs()
     {
         var path = Path.Combine(Application.streamingAssetsPath, "output");
         var fileName = Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".mp4");
+        var offset = "-offset_x " + OffsetPos.x + " -offset_y " + OffsetPos.y;
         var resolution = "-video_size " + CaptureSize.x + "x" + CaptureSize.y;
         if (CaptureSize.x == 0 || CaptureSize.y == 0)
             resolution = "";
 
-        _ffargs = "-rtbufsize 1500M -f dshow -i audio=\"" + AudioInput + "\" -f -y -rtbufsize 100M -f gdigrab -t 00:00:30 " + resolution + " -framerate 30 -probesize 10M -draw_mouse 0 -i desktop -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 -pix_fmt yuv420p \"" + fileName + "\"";
-        return true;
+        var _ffargs = "-rtbufsize 1500M -f dshow -i audio=\"" + AudioInput + "\" -f -y -rtbufsize 100M -f gdigrab -t 00:00:30 " + offset + " " + resolution + " -framerate 30 -probesize 10M -draw_mouse 0 -i desktop -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 -pix_fmt yuv420p \"" + fileName + "\"";
+        return _ffargs;
     }
 
     private void Output(object sendProcess, DataReceivedEventArgs output)
@@ -142,15 +144,18 @@ public class FFScreenRecorder : MonoBehaviour
         }
     }
 
-    private IEnumerator IERecording()
+    private IEnumerator IEEnterCmd(string args)
     {
         yield return null;
 
         Process ffp = new Process();
-        ffp.StartInfo.FileName = _ffpath;                   // 進程可執行文件位置
-        ffp.StartInfo.Arguments = _ffargs;                  // 傳給可執行文件的命令行參數
-        ffp.StartInfo.CreateNoWindow = !debugOpenFF;             // 是否顯示控制檯窗口
-        ffp.StartInfo.UseShellExecute = debugOpenFF;             // 是否使用操作系統Shell程序啓動進程
+        ffp.StartInfo.FileName = ffpath;                   // 進程可執行文件位置
+        ffp.StartInfo.Arguments = args;                  // 傳給可執行文件的命令行參數
+        ffp.StartInfo.CreateNoWindow = true;             // 是否顯示控制檯窗口
+        ffp.StartInfo.UseShellExecute = false;             // 是否使用操作系統Shell程序啓動進程
+
+        //ffp.StartInfo.CreateNoWindow = !debugOpenFF;             // 是否顯示控制檯窗口
+        //ffp.StartInfo.UseShellExecute = debugOpenFF;             // 是否使用操作系統Shell程序啓動進程
         ffp.StartInfo.Verb = "runas";
 
         if (showlog)
@@ -167,7 +172,7 @@ public class FFScreenRecorder : MonoBehaviour
             ffp.BeginErrorReadLine();
     }
 
-    private IEnumerator IEExitCmd(Action _OnStopRecording)
+    private IEnumerator IEExitCmd(Action _OnStopRecording, float stopTime = 3)
     {
         // 將當前進程附加到pid進程的控制檯
         AttachConsole(_pid);
@@ -179,7 +184,7 @@ public class FFScreenRecorder : MonoBehaviour
         GenerateConsoleCtrlEvent(0, 0);
 
         // ffmpeg不能立即停止，等待一會，否則視頻無法播放
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(stopTime);
 
         // 卸載控制檯事件的處理句柄，不然之後的ffmpeg調用無法正常停止
         SetConsoleCtrlHandler(IntPtr.Zero, false);
