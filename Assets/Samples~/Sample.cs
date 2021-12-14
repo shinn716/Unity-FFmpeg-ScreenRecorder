@@ -16,7 +16,7 @@ public class Sample : MonoBehaviour
 
     public void OnenFolder()
     {
-        WindowsEventAPI.OpenExplorer(Path.Combine(Application.streamingAssetsPath, "output"));
+        ScreenRecorder.WindowsEventAPI.OpenExplorer(Path.Combine(Application.streamingAssetsPath, "output"));
     }
 
     private IEnumerator Process(bool ison, Toggle btnui, float delay = 3)
