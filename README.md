@@ -4,7 +4,7 @@ Right click on ```FFScreenRecorder``` component and click StartRecording, it wil
 Then click StopRecording, it will stop recording and export video to ```streamingassets/out```.  
   
 <img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2.gif" /></a>  
-<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_1.png" width="56%"/></a>  
+<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_1.png" width="55%"/></a>  
 
 # List devices
 ```
