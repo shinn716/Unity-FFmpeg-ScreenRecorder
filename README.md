@@ -3,7 +3,8 @@ FFmpeg Capture screen and audio (speaker and microphone)
 Right click on ```FFScreenRecorder``` component and click StartRecording, it will capture screen and audio both.  
 Then click StopRecording, it will stop recording and export video to ```streamingassets/out```.  
   
-<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/Snipaste_2021-12-09_17-04-33.png" /></a>  
+<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_1.png" /></a>  
+<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2.gif" /></a>  
 
 # List devices
 ```
