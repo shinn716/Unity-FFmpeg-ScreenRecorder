@@ -1,15 +1,9 @@
 {
-    "name": "com.shinn.screenrecorder",
-    "displayName": "ScreenRecorder",
-    "description": "Put StreamingAssets folder into Assets/",
-    "version": "0.0.1",
-    "license": "free",
-    "keywords": ["ScreenRecorder", "FFmpeg"],
-    "author": 
-    {
-        "name": "John Tsai",
-        "url": "https://github.com/shinn716"
-    },
+    "name": "com.shinn.ffrecorder",
+    "displayName": "FFScreenAudioRecorder",
+    "version": "0.0.2",
+    "keywords": ["Screen/Audio Recorder", "FFmpeg"],
+	"description": "Put StreamingAssets folder into Assets/",
     "samples": 
     [
         {

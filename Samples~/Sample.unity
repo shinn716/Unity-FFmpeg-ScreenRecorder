@@ -385,7 +385,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 996331166}
+      - m_Target: {fileID: 0}
         m_MethodName: GetDevicesList
         m_Mode: 1
         m_Arguments:
@@ -516,7 +516,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 996331168}
+      - m_Target: {fileID: 996331166}
         m_MethodName: OnenFolder
         m_Mode: 1
         m_Arguments:
@@ -5572,7 +5572,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 996331168}
+      - m_Target: {fileID: 996331166}
         m_MethodName: Record
         m_Mode: 0
         m_Arguments:
@@ -5683,15 +5683,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 996331165}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a9c78ba5b87da040aa18c9d67a06bb8, type: 3}
+  m_Script: {fileID: 11500000, guid: 56529a91af0d9e84d8b3396ea0dd97c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ffmpegPreset: 0
-  framerate: 60
-  captureSize: {x: 1920, y: 1080}
-  offsetPos: {x: 0, y: 0}
-  AudioInput: Microphone (Realtek(R) Audio)
-  showlog: 1
+  screenRecorder: {fileID: 996331168}
+  recordtxt: {fileID: 1813507505}
 --- !u!4 &996331167
 Transform:
   m_ObjectHideFlags: 0
@@ -5715,11 +5711,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 996331165}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 015fc61469d552f41996cca7d383ddab, type: 3}
+  m_Script: {fileID: 11500000, guid: 0312b668d68b7fb4997832471f18798c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  screenRecorder: {fileID: 996331166}
-  recordtxt: {fileID: 1813507505}
+  ffmpegPreset: 0
+  framerate: 30
+  captureSize: {x: 1920, y: 1080}
+  offsetPos: {x: 0, y: 0}
+  AudioInput: Microphone (Realtek(R) Audio)
+  showlog: 1
 --- !u!1 &1364667678
 GameObject:
   m_ObjectHideFlags: 0
