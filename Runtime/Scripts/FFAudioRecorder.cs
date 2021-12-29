@@ -21,6 +21,8 @@ public class FFAudioRecorder : MonoBehaviour
     #endregion
 
     public string AudioInput = "Microphone (Realtek(R) Audio)";
+    [Tooltip("If 'CustomFileName' is empty, it'll export by default name.")]
+    public string CustomFileName = string.Empty;
     public bool showlog = true;
 
     private string ffpath = string.Empty;
@@ -108,7 +110,9 @@ public class FFAudioRecorder : MonoBehaviour
     private string SettingRecordingArgs()
     {
         var path = Path.Combine(Application.streamingAssetsPath, "output");
-        var fileName = Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".mp3");
+        string fileName = CustomFileName.Equals(String.Empty) ?
+                          Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".mp3") :
+                          Path.Combine(path, CustomFileName + ".mp3");
         var _ffargs = "-f dshow -i audio=\"" + AudioInput + "\" -acodec libmp3lame " + " \"" + fileName + "\"";
         return _ffargs;
     }

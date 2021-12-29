@@ -39,6 +39,8 @@ public class FFScreenRecorder : MonoBehaviour
     public Vector2Int offsetPos = new Vector2Int(0, 0);
 
     public string AudioInput = "Microphone (Realtek(R) Audio)";
+    [Tooltip("If 'CustomFileName' is empty, it'll export by default name.")]
+    public string CustomFileName = string.Empty;
     public bool showlog = true;
 
     private string ffpath = string.Empty;
@@ -128,7 +130,11 @@ public class FFScreenRecorder : MonoBehaviour
     private string SettingRecordingArgs()
     {
         var path = Path.Combine(Application.streamingAssetsPath, "output");
-        var fileName = Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + FFmpegOut.FFmpegPresetExtensions.GetSuffix(ffmpegPreset));
+        //var fileName = Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + FFmpegOut.FFmpegPresetExtensions.GetSuffix(ffmpegPreset));
+        string fileName = CustomFileName.Equals(String.Empty) ?
+                          Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + FFmpegOut.FFmpegPresetExtensions.GetSuffix(ffmpegPreset)) :
+                          Path.Combine(path, CustomFileName + FFmpegOut.FFmpegPresetExtensions.GetSuffix(ffmpegPreset));
+
         var offset = "-offset_x " + offsetPos.x + " -offset_y " + offsetPos.y;
         var resolution = "-video_size " + captureSize.x + "x" + captureSize.y;
         if (captureSize.x == 0 || captureSize.y == 0)
