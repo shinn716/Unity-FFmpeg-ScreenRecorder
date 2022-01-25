@@ -49,6 +49,8 @@ public class FFScreenRecorder : MonoBehaviour
     private int _pid;
     private bool _isRecording = false;
 
+    public string GetFilename { get; set; }
+
 
     private void Start()
     {
@@ -141,8 +143,10 @@ public class FFScreenRecorder : MonoBehaviour
             resolution = "";
         var option = FFmpegOut.FFmpegPresetExtensions.GetOptions(ffmpegPreset);
 
-        //var _ffargs = "-rtbufsize 1500M -f dshow -i audio=\"" + AudioInput + "\" -f -y -rtbufsize 100M -f gdigrab -t 00:00:30 " + offset + " " + resolution + " -framerate 30 -probesize 10M -draw_mouse 0 -i desktop -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 -pix_fmt yuv420p \"" + fileName + "\"";
-        var _ffargs = "-rtbufsize 1500M -f dshow -i audio=\"" + AudioInput + "\" -f -y -rtbufsize 100M -f gdigrab -t 00:00:30 " + offset + " " + resolution + " -framerate " + framerate + " -probesize 10M -draw_mouse 0 -i desktop -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 " + option + " \"" + fileName + "\"";
+        GetFilename = fileName;
+
+        //var _ffargs = "-rtbufsize 1500M -f dshow -i audio=\"" + AudioInput + "\" -f -y -rtbufsize 100M -f gdigrab " + offset + " " + resolution + " -framerate 30 -probesize 10M -draw_mouse 0 -i desktop -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 -pix_fmt yuv420p \"" + fileName + "\"";
+        var _ffargs = "-rtbufsize 1500M -f dshow -i audio=\"" + AudioInput + "\" -f -y -rtbufsize 100M -f gdigrab " + offset + " " + resolution + " -framerate " + framerate + " -probesize 10M -draw_mouse 0 -i desktop -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 25 " + option + " \"" + fileName + "\"";
         return _ffargs;
     }
 
