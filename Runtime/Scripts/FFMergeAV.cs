@@ -1,13 +1,12 @@
-﻿// Sources: https://www.twblogs.net/a/5ef0c1884b16c91a2849601a
-
-using System;
+﻿using System;
 using System.IO;
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using System.Threading.Tasks;
 
-public class FFAudioRecorder : MonoBehaviour
+public class FFMergeAV : MonoBehaviour
 {
     #region 模擬控制檯信號需要使用的DLL
     [DllImport("kernel32.dll")]
@@ -22,7 +21,9 @@ public class FFAudioRecorder : MonoBehaviour
 
     [Tooltip("StreamingAssetsPath + [FFmpegPath]")]
     public string FFmpegPath = "/ffmpeg/ffmpeg.exe";
-    public string AudioInput = "Microphone (Realtek(R) Audio)";
+
+    public string AudioOutput = "X:/test.mp3";
+    public string VideoOutput = "X:/test.mp4";
 
     [Tooltip("If 'CustomFileName' is empty, it'll export by default name.")]
     public string CustomFileName = string.Empty;
@@ -30,7 +31,7 @@ public class FFAudioRecorder : MonoBehaviour
 
     private string ffpath = string.Empty;
     private int _pid;
-    private bool _isRecording = false;
+    private bool _isProcess = false;
 
 
     private void Start()
@@ -38,23 +39,23 @@ public class FFAudioRecorder : MonoBehaviour
         ffpath = Application.streamingAssetsPath + FFmpegPath;
 
         // Clear ffmpeg Process in memory.
-        StartCoroutine(IEExitCmd(() => { print("Init"); }, 0));
+        StartCoroutine(IEExitCmd(() => { print("FFmpeg Init"); }, 0));
         Process[] goDie = Process.GetProcessesByName("ffmpeg");
         foreach (Process p in goDie) p.Kill();
     }
 
     private void OnDestroy()
     {
-        if (_isRecording)
+        if (_isProcess)
         {
             try
             {
-                UnityEngine.Debug.LogError("FFRecorder::OnDestroy - 錄製進程非正常結束，輸出文件可能無法播放。");
+                UnityEngine.Debug.LogError("FFMergeAV::OnDestroy - 錄製進程非正常結束，輸出文件可能無法播放。");
                 Process.GetProcessById(_pid).Kill();
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError("FFRecorder::OnDestroy - " + e.Message);
+                UnityEngine.Debug.LogError("FFMergeAV::OnDestroy - " + e.Message);
             }
         }
     }
@@ -64,9 +65,9 @@ public class FFAudioRecorder : MonoBehaviour
     public void GetDevicesList()
     {
         print("[GetDevicesList]");
-        if (_isRecording)
+        if (_isProcess)
         {
-            UnityEngine.Debug.LogError("FFRecorder::StartRecording - 當前已有錄製進程。");
+            UnityEngine.Debug.LogError("FFMergeAV::StartProcessing - 當前已有錄製進程。");
             return;
         }
 
@@ -74,49 +75,35 @@ public class FFAudioRecorder : MonoBehaviour
         StartCoroutine(GetDevicesProcess(_ffargs));
     }
 
-    [ContextMenu("StartRecording")]
-    public void StartRecording()
+    [ContextMenu("StartMerge")]
+    public void StartMerge()
     {
-        if (_isRecording)
+        if (_isProcess)
         {
-            UnityEngine.Debug.LogError("FFRecorder::StartRecording - 當前已有錄製進程。");
+            UnityEngine.Debug.LogError("FFMergeAV::StartRecording - 當前已有錄製進程。");
             return;
         }
 
-        // 解析設置，如果設置正確，則開始錄製
         print("[Start FF]");
         var _ffargs = SettingRecordingArgs();
-        UnityEngine.Debug.Log("FFRecorder::StartRecording - 執行命令：" + ffpath + " " + _ffargs);
+        UnityEngine.Debug.Log("FFMergeAV::StartRecording - 執行命令：" + ffpath + " " + _ffargs);
         StartCoroutine(IEEnterCmd(_ffargs));
-    }
 
-    [ContextMenu("StopRecording")]
-    public void StopRecording()
-    {
-        StopRecording(() =>
-        {
-            print("[Stop FF]");
-        });
-    }
-
-
-    private void StopRecording(Action _OnStopRecording)
-    {
-        if (!_isRecording)
-        {
-            UnityEngine.Debug.Log("FFRecorder::StopRecording - 當前沒有錄製進程，已取消操作。");
-            return;
-        }
-        StartCoroutine(IEExitCmd(_OnStopRecording));
+        StartCoroutine(IEExitCmd(
+            () =>
+            {
+                print("[Stop FF]");
+            }, 3)
+            );
     }
 
     private string SettingRecordingArgs()
     {
         var path = Path.Combine(Application.streamingAssetsPath, "output");
         string fileName = CustomFileName.Equals(String.Empty) ?
-                          Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".mp3") :
-                          Path.Combine(path, CustomFileName + ".mp3");
-        var _ffargs = "-f dshow -i audio=\"" + AudioInput + "\" -acodec libmp3lame " + " \"" + fileName + "\"";
+                          Path.Combine(path, Application.productName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".mp4") :
+                          Path.Combine(path, CustomFileName + ".mp4");
+        var _ffargs = "-i " + VideoOutput + " -i " + AudioOutput + " -c:v copy -c:a aac " + fileName;
         return _ffargs;
     }
 
@@ -158,7 +145,7 @@ public class FFAudioRecorder : MonoBehaviour
         }
 
         // 開始進程
-        _isRecording = ffp.Start();
+        _isProcess = ffp.Start();
         _pid = ffp.Id;
 
         if (showlog)
@@ -184,7 +171,7 @@ public class FFAudioRecorder : MonoBehaviour
         // 剝離已附加的控制檯
         FreeConsole();
 
-        _isRecording = false;
+        _isProcess = false;
 
         if (_OnStopRecording != null)
             _OnStopRecording();

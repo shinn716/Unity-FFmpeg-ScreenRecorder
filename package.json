@@ -1,7 +1,7 @@
 {
     "name": "com.shinn.ffrecorder",
     "displayName": "FFScreenAudioRecorder",
-    "version": "0.0.3",
+    "version": "0.0.6",
     "keywords": ["Screen/Audio Recorder", "FFmpeg"],
 	"description": "Put StreamingAssets folder into Assets/",
     "samples": 
