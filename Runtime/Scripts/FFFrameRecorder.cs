@@ -56,22 +56,17 @@ public class FFFrameRecorder : MonoBehaviour
 
     private string imagePath;
     private string ffpath = string.Empty;
-    //private int processId = 0;
-    private Process process = null;
-    private Process process_console = null;
 
     private int index = 0;
-    private float nextFrame = 0.0F;
     private Texture2D frame;
     private RenderTexture rt;
     private Rect rect;
-    private bool isReady = false;
     private byte[] bytes;
 
     void Start()
     {
         ffpath = @Application.streamingAssetsPath + ffmpegPath;
-        imagePath = @Application.streamingAssetsPath + "/FFTemp/";
+        imagePath = @Application.streamingAssetsPath + "/FFTemp~/";
 
         if (!Directory.Exists(imagePath.TrimEnd('/')))
             Directory.CreateDirectory(imagePath.TrimEnd('/'));
@@ -88,7 +83,7 @@ public class FFFrameRecorder : MonoBehaviour
     }
 
     [ContextMenu("StartRecording")]
-    async public void StartRecording()
+    public void StartRecording()
     {
         if (TargetCam == null)
         {
@@ -97,20 +92,21 @@ public class FFFrameRecorder : MonoBehaviour
         }
 
         print("[Log] Start Recording...");
-        isReady = true;
-        await AsyncCapture();
+        AsyncCapture(cts.Token);
     }
+
+    CancellationTokenSource cts = new CancellationTokenSource();
 
     [ContextMenu("StopRecording")]
-    async public void StopRecording()
+    public void StopRecording()
     {
         print("[Log] Stop Record");
-        isReady = false;
-        await AsyncCreateProcess();
+        cts.Cancel();
+        AsyncCreateProcess();
     }
 
 
-    private async Task AsyncCapture()
+    async private void AsyncCapture(CancellationToken ct)
     {
         if (TargetCam == null)
         {
@@ -118,7 +114,7 @@ public class FFFrameRecorder : MonoBehaviour
             return;
         }
 
-        while (isReady)
+        while (!ct.IsCancellationRequested)
         {
             CaptureCamera(TargetCam, index);
             index++;
@@ -126,7 +122,7 @@ public class FFFrameRecorder : MonoBehaviour
         }
     }
 
-    private async Task AsyncCreateProcess()
+    async private void AsyncCreateProcess()
     {
         Process p = new Process();
         var path = Path.Combine(Application.streamingAssetsPath, OutputFolder);
@@ -162,11 +158,11 @@ public class FFFrameRecorder : MonoBehaviour
             DirectoryInfo dir = new DirectoryInfo(imagePath);
             dir.Delete(true);
             //Directory.CreateDirectory(imagePath.TrimEnd('/'));
+            print("[Log] Output: " + GetOutputName);
         });
         //task02.Wait();
 
         await Task.Yield();
-        print("[Log] Output: " + GetOutputName);
     }
 
     private void Output(object sendProcess, DataReceivedEventArgs output)
@@ -175,7 +171,7 @@ public class FFFrameRecorder : MonoBehaviour
             UnityEngine.Debug.Log(output.Data);
     }
 
-    private async void CaptureCamera(Camera camera, int index)
+    async private void CaptureCamera(Camera camera, int index)
     {
         camera.targetTexture = rt;
         camera.Render();
