@@ -4,7 +4,7 @@ https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder.git#upm
 ```    
 
 <img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2.gif" /></a>  
-<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2-0.png" width="60%"/></a>  
+<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2-0.png" width="30%"/></a>  
 
 * FFAudioRecorder  
 Capture microphone and system sound.  
