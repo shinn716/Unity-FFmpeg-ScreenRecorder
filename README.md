@@ -5,7 +5,10 @@ https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder.git#upm
 
 <img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2.gif" /></a>  
 <img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2-0.png" width="30%"/></a>  
-
+  
+Need to set Audio input in first time.  
+<img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_3.png" width="50%"/></a>  
+  
 * FFAudioRecorder  
 Capture microphone and system sound.  
 <img src="https://github.com/shinn716/Unity-FFmpeg-ScreenRecorder/blob/main/img/img_2-2.png" width="50%"/></a>  
